@@ -19,7 +19,7 @@ class ProductTest < ActiveSupport::TestCase
       assert product.invalid?
       assert_equal "must be greater than or equal to 0.01", product.errors[:price].join(';')
       product.price = 1
-      assert product.valid?
+      assert !product.valid?
    end
  
    test "third test" do
@@ -29,6 +29,9 @@ class ProductTest < ActiveSupport::TestCase
       
    end
    
-
+   test "check title length" do
+      product = Product.new(title: )
+      assert !product.errors[:title].any?
+   end
 
 end
