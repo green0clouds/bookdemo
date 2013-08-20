@@ -10,7 +10,19 @@ class CartsController < ApplicationController
   # GET /carts/1
   # GET /carts/1.json
   def show
-  end
+     @session_count = session[:counter]
+     begin
+       @cart = Cart.find(params[:id])
+rescue ActiveRecord::RecordNotFound
+logger.error "Попытка доступа к несуществующей корзине #{params[:id]}"
+redirect_to store_url, notice: 'Несуществующая корзина'
+ else
+respond_to do |format|
+format.html # show.html.erb
+format.json { render json: @cart }
+end
+end
+end
 
   # GET /carts/new
   def new
@@ -53,13 +65,15 @@ class CartsController < ApplicationController
 
   # DELETE /carts/1
   # DELETE /carts/1.json
-  def destroy
-    @cart.destroy
-    respond_to do |format|
-      format.html { redirect_to carts_url }
-      format.json { head :no_content }
-    end
-  end
+def destroy
+   @cart = current_cart
+   @cart.destroy
+   session[:cart_id] = nil
+   respond_to do |format|
+   format.html { redirect_to store_url, notice: 'Your cart is empty' }
+   format.json { head :ok }
+   end
+end
 
   private
     # Use callbacks to share common setup or constraints between actions.
